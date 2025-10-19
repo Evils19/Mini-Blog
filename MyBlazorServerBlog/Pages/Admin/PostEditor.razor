@@ -1,0 +1,146 @@
+﻿@page "/admin/posts/new"
+@page "/admin/posts/{id:int}/edit"
+@inject BlogDbContext Db
+@inject NavigationManager Nav
+
+<PageTitle>Редактор поста</PageTitle>
+
+<section class="container my-4">
+    <h1>@(_isNew ? "Добавить пост" : "Редактировать пост")</h1>
+
+    @if (!string.IsNullOrWhiteSpace(_error))
+    {
+        <div class="alert alert-danger">@_error</div>
+    }
+
+    @if (_loading)
+    {
+        <div class="alert alert-info">Загрузка…</div>
+    }
+    else
+    {
+        <EditForm Model="_model" OnValidSubmit="SaveAsync">
+            <DataAnnotationsValidator />
+            <ValidationSummary />
+
+            <div class="mb-3">
+                <label class="form-label">Заголовок</label>
+                <InputText class="form-control" @bind-Value="_model.Title" />
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label d-flex justify-content-between align-items-center">
+                    <span>Содержание</span>
+                    <div class="btn-group btn-group-sm" role="group">
+                        <button type="button" class="btn btn-outline-secondary @(_editorMode ? "active" : "")" 
+                                @onclick="() => SwitchMode(true)">
+                            <i class="bi bi-pencil-square"></i> Визуальный редактор
+                        </button>
+                        <button type="button" class="btn btn-outline-secondary @(!_editorMode ? "active" : "")" 
+                                @onclick="() => SwitchMode(false)">
+                            <i class="bi bi-code-slash"></i> HTML
+                        </button>
+                    </div>
+                </label>
+
+                @if (_editorMode)
+                {
+                    <SfRichTextEditor @bind-Value="_model.Content" Placeholder="Введите текст поста здесь..." Height="400px" />
+                }
+                else
+                {
+                    <InputTextArea class="form-control font-monospace" @bind-Value="_model.Content" rows="15" 
+                                   style="font-size: 14px; tab-size: 2;" />
+                    <small class="form-text text-muted">
+                        <i class="bi bi-info-circle"></i> Режим HTML: можно писать код напрямую
+                    </small>
+                }
+            </div>
+
+            <div class="form-check mb-3">
+                <InputCheckbox class="form-check-input" @bind-Value="_model.IsPublished" />
+                <label class="form-check-label">Опубликовано</label>
+            </div>
+
+            <button class="btn btn-primary" type="submit">
+                <i class="bi bi-save"></i> Сохранить
+            </button>
+            <NavLink class="btn btn-outline-secondary ms-2" href="/admin/posts">
+                <i class="bi bi-x-circle"></i> Отмена
+            </NavLink>
+        </EditForm>
+    }
+</section>
+
+@code {
+    [Parameter] public int? id { get; set; }
+    private bool _isNew => !id.HasValue;
+    private Post _model = new();
+    private bool _loading = true;
+    private string? _error;
+    private bool _editorMode = true;
+
+    protected override async Task OnParametersSetAsync()
+    {
+        _error = null;
+        _loading = true;
+        try
+        {
+            if (_isNew)
+            {
+                _model = new Post { IsPublished = true };
+            }
+            else
+            {
+                var existing = await Db.Posts.FirstOrDefaultAsync(x => x.Id == id!.Value);
+                if (existing is null)
+                {
+                    _error = "Пост не найден.";
+                    _model = new Post();
+                }
+                else
+                {
+                    _model = existing;
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            _error = $"Ошибка загрузки поста: {ex.Message}";
+        }
+        finally
+        {
+            _loading = false;
+        }
+    }
+
+    private Task SwitchMode(bool useEditor)
+    {
+        _editorMode = useEditor;
+        return Task.CompletedTask;
+    }
+
+    private async Task SaveAsync()
+    {
+        try
+        {
+            if (_isNew)
+            {
+                _model.CreatedAt = DateTime.UtcNow;
+                await Db.Posts.AddAsync(_model);
+            }
+            else
+            {
+                _model.UpdatedAt = DateTime.UtcNow;
+                Db.Posts.Update(_model);
+            }
+
+            await Db.SaveChangesAsync();
+            Nav.NavigateTo("/admin/posts");
+        }
+        catch (Exception ex)
+        {
+            _error = $"Ошибка сохранения: {ex.Message}";
+        }
+    }
+}

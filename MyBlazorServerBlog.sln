@@ -5,6 +5,8 @@ VisualStudioVersion = 17.7.33906.173
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MyBlazorServerBlog", "MyBlazorServerBlog\MyBlazorServerBlog.csproj", "{0C6E60D2-5F52-46F9-B86B-915F88CA002E}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Analiza_Statica", "Analiza_Statica\Analiza_Statica.csproj", "{42656E6D-C315-485E-946C-42495A98287B}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +17,10 @@ Global
 		{0C6E60D2-5F52-46F9-B86B-915F88CA002E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0C6E60D2-5F52-46F9-B86B-915F88CA002E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0C6E60D2-5F52-46F9-B86B-915F88CA002E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{42656E6D-C315-485E-946C-42495A98287B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{42656E6D-C315-485E-946C-42495A98287B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{42656E6D-C315-485E-946C-42495A98287B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{42656E6D-C315-485E-946C-42495A98287B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

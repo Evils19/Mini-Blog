@@ -2,40 +2,74 @@
 @inject IJSRuntime js
 <PageTitle>MyBlazorServerBlog</PageTitle>
 
-@* <div class="page">
-    <div class="sidebar">
-        <NavMenu />
-    </div>
+<style>
+    div[style*="position: fixed"][style*="z-index: 999999999"] {
+        display: none !important;
+    }
+    div[style*="This application was built using a trial version of Syncfusion"] {
+        display: none !important;
+        visibility: hidden !important;
+    }
+    /* Ascunde toate bannerele sau popup-urile de la Syncfusion */
+    div[style*="This application was built using a trial version of Syncfusion"],
+    div:has(a[href*="syncfusion.com"]),
+    div:has(span:contains("Claim your FREE account")),
+    div[style*="z-index: 999999999"] {
+        display: none !important;
+        visibility: hidden !important;
+        opacity: 0 !important;
+        pointer-events: none !important;
+    }
 
-    <main>
-        <div class="top-row px-4">
-            <a href="https://docs.microsoft.com/aspnet/" target="_blank">About</a>
-        </div>
+    /* Fullscreen fixed overlay with semi-transparent black background */
+    div[style*="position: fixed"][style*="width: 100%"][style*="height: 100%"][style*="top: 0"][style*="left: 0"][style*="right: 0"][style*="bottom: 0"][style*="background-color: rgba(0, 0, 0, 0.5)"][style*="z-index: 99999"],
+    div[style*="position:fixed"][style*="width:100%"][style*="height:100%"][style*="top:0"][style*="left:0"][style*="right:0"][style*="bottom:0"][style*="background-color:rgba(0,0,0,0.5)"][style*="z-index:99999"] {
+        display: none !important;
+        visibility: hidden !important;
+        opacity: 0 !important;
+        pointer-events: none !important;
+    }
 
-        <article class="content px-4">
-            @Body
-        </article>
-    </main>
-</div>
- *@
+</style>
+
 
 <div class="page">
-    <main>
-        <Header></Header>
+    <Header></Header>
+    <main style="padding-top: 80px; min-height: calc(100vh - 400px);">
         @Body
         <Footer></Footer>
     </main>
+
 </div>
 
-@* @code {
-    protected async override Task OnAfterRenderAsync(bool firstRender)
+@code {
+    protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        if (firstRender || !firstRender)
+        if (firstRender)
         {
-            await js.InvokeAsync<IJSObjectReference>("import", "../assets/js/main.js");
-            await js.InvokeAsync<IJSObjectReference>("import", "../assets/vendor/glightbox/js/glightbox.min.js");
-            await js.InvokeAsync<IJSObjectReference>("import", "../assets/vendor/swiper/swiper-bundle.min.js");
+            await js.InvokeVoidAsync("eval", @"
+                if (typeof Swiper !== 'undefined') {
+                    new Swiper('.sliderFeaturedPosts', {
+                        spaceBetween: 0,
+                        speed: 500,
+                        centeredSlides: true,
+                        loop: true,
+                        slideToClickedSlide: true,
+                        autoplay: {
+                            delay: 3000,
+                            disableOnInteraction: true,
+                        },
+                        pagination: {
+                            el: '.swiper-pagination',
+                            clickable: true,
+                        },
+                        navigation: {
+                            nextEl: '.custom-swiper-button-next',
+                            prevEl: '.custom-swiper-button-prev',
+                        },
+                    });
+                }
+            ");
         }
-
     }
-} *@
+}

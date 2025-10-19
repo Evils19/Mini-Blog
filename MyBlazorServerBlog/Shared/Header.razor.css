@@ -11,6 +11,13 @@
     font-size: 1.1rem;
 }
 
+#header{
+    position: fixed;
+    width: 100%;
+    z-index: 1030; /* Bootstrap navbar z-index is 1030 */
+
+}
+
 .oi {
     width: 2rem;
     font-size: 1.1rem;

@@ -1,0 +1,49 @@
+﻿@page "/posts"
+@inject BlogDbContext Db
+@inject NavigationManager Nav
+
+<PageTitle>Посты</PageTitle>
+
+<h1>Посты</h1>
+
+<div class="mb-3">
+    <NavLink class="btn btn-primary" href="/admin/posts/new">Добавить пост</NavLink>
+</div>
+
+@if (_loading)
+{
+    <p>Загрузка...</p>
+}
+else if (_posts.Count == 0)
+{
+    <p>Постов пока нет.</p>
+}
+else
+{
+    <div class="list-group">
+        @foreach (var p in _posts)
+        {
+            <a class="list-group-item list-group-item-action" href="/posts/@p.Id">
+                <div class="d-flex w-100 justify-content-between">
+                    <h5 class="mb-1">@p.Title</h5>
+                    <small>@p.CreatedAt.ToLocalTime().ToString("g")</small>
+                </div>
+                <p class="mb-1 text-truncate">@p.Content</p>
+            </a>
+        }
+    </div>
+}
+
+@code {
+    private List<Post> _posts = new();
+    private bool _loading = true;
+
+    protected override async Task OnInitializedAsync()
+    {
+        _posts = await Db.Posts
+            .Where(p => p.IsPublished)
+            .OrderByDescending(p => p.CreatedAt)
+            .ToListAsync();
+        _loading = false;
+    }
+}

@@ -1,0 +1,107 @@
+﻿@page "/admin/posts"
+@inject BlogDbContext Db
+@inject NavigationManager Nav
+
+<PageTitle>Админка — Посты</PageTitle>
+
+<section class="container my-4">
+    <h1>Админка — Посты</h1>
+
+    <div class="mb-3">
+        <NavLink class="btn btn-primary" href="/admin/posts/new">Добавить пост</NavLink>
+        <NavLink class="btn btn-outline-secondary ms-2" href="/posts">К списку (публично)</NavLink>
+    </div>
+
+    @if (!string.IsNullOrWhiteSpace(_error))
+    {
+        <div class="alert alert-danger">@_error</div>
+    }
+
+    @if (_loading)
+    {
+        <div class="alert alert-info">Загрузка…</div>
+    }
+    else if (_posts.Count == 0)
+    {
+        <p>Постов пока нет.</p>
+    }
+    else
+    {
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Заголовок</th>
+                    <th>Создан</th>
+                    <th>Опубликован</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+            @foreach (var p in _posts)
+            {
+                <tr>
+                    <td>@p.Id</td>
+                    <td>@p.Title</td>
+                    <td>@p.CreatedAt.ToLocalTime().ToString("g")</td>
+                    <td>
+                        @if (p.IsPublished)
+                        {
+                            <span class="badge bg-success">Да</span>
+                        }
+                        else
+                        {
+                            <span class="badge bg-secondary">Нет</span>
+                        }
+                    </td>
+                    <td class="text-end">
+                        <NavLink class="btn btn-sm btn-outline-primary" href="@($"/admin/posts/{p.Id}/edit")">Редактировать</NavLink>
+                        <button class="btn btn-sm btn-outline-danger ms-1" @onclick="() => DeleteAsync(p.Id)">Удалить</button>
+                    </td>
+                </tr>
+            }
+            </tbody>
+        </table>
+    }
+</section>
+
+@code {
+    private List<Post> _posts = new();
+    private bool _loading = true;
+    private string? _error;
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            _posts = await Db.Posts
+                .OrderByDescending(p => p.CreatedAt)
+                .ToListAsync();
+        }
+        catch (Exception ex)
+        {
+            _error = $"Ошибка загрузки постов: {ex.Message}";
+        }
+        finally
+        {
+            _loading = false;
+        }
+    }
+
+    private async Task DeleteAsync(int id)
+    {
+        try
+        {
+            var item = await Db.Posts.FirstOrDefaultAsync(x => x.Id == id);
+            if (item is null) return;
+            Db.Posts.Remove(item);
+            await Db.SaveChangesAsync();
+            _posts.RemoveAll(x => x.Id == id);
+            StateHasChanged();
+        }
+        catch (Exception ex)
+        {
+            _error = $"Ошибка удаления: {ex.Message}";
+        }
+    }
+}

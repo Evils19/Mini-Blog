@@ -4,6 +4,16 @@ html, body {
     font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
 }
 
+
+div[style*="position: fixed"][style*="z-index: 999999999"] {
+    display: none !important;
+}
+div[style*="This application was built using a trial version of Syncfusion"] {
+    display: none !important;
+    visibility: hidden !important;
+}
+
+
 h1:focus {
     outline: none;
 }

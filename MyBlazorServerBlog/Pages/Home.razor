@@ -1,4 +1,6 @@
 ﻿@inject IJSRuntime js
+@inject BlogDbContext Db
+@using System.Text.RegularExpressions
 
 <!-- ======= Hero Slider Section ======= -->
     <section id="hero-slider" class="hero-slider">
@@ -167,8 +169,68 @@
       </div>
     </section> <!-- End Post Grid Section -->
 
+    <!-- ======= Latest Blog Posts (dynamic) ======= -->
+    <section id="latest-posts" class="posts py-5 border-top">
+        <div class="container" data-aos="fade-up">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h3 class="m-0">Последние публикации</h3>
+                <a class="btn btn-outline-primary btn-sm" href="/posts">Все посты</a>
+            </div>
+
+            @if (_loading)
+            {
+                <p>Загрузка…</p>
+            }
+            else if (_posts.Count == 0)
+            {
+                <p>Пока нет опубликованных записей.</p>
+            }
+            else
+            {
+                <div class="row g-4">
+                    @foreach (var p in _posts)
+                    {
+                        <div class="col-12 col-md-6 col-lg-4">
+                            <div class="post-entry-1 h-100">
+                                <a href="/posts/@p.Id"><img src="assets/img/post-landscape-2.jpg" alt="" class="img-fluid"></a>
+                                <div class="post-meta"><span class="date">Пост</span> <span class="mx-1">&bullet;</span> <span>@p.CreatedAt.ToLocalTime().ToString("dd MMM yyyy")</span></div>
+                                <h2 class="h5"><a href="/posts/@p.Id">@p.Title</a></h2>
+                                <p class="mb-3 text-muted" style="display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden;">
+                                    @Truncate(StripHtml(p.Content), 180)
+                                </p>
+                                <a class="text-decoration-none" href="/posts/@p.Id">Читать далее →</a>
+                            </div>
+                        </div>
+                    }
+                </div>
+            }
+        </div>
+    </section>
+
 
 @code{
+    private List<Post> _posts = new();
+    private bool _loading = true;
+
+    protected override async Task OnInitializedAsync()
+    {
+        _posts = await Db.Posts
+            .Where(p => p.IsPublished)
+            .OrderByDescending(p => p.CreatedAt)
+            .Take(6)
+            .ToListAsync();
+        _loading = false;
+    }
+
+    private static string StripHtml(string html)
+        => string.IsNullOrWhiteSpace(html) ? string.Empty : Regex.Replace(html, "<.*?>", string.Empty).Trim();
+
+    private static string Truncate(string value, int max)
+    {
+        if (string.IsNullOrEmpty(value) || value.Length <= max) return value;
+        return value.Substring(0, max).TrimEnd() + "…";
+    }
+
     protected async override Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender || !firstRender)
