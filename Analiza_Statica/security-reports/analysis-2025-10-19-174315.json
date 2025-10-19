@@ -1,0 +1,56 @@
+{
+  "ProjectPath": "C:\\Users\\jitar\\RiderProjects\\MyBlazorServerBlog\\Analiza_Statica",
+  "ProjectName": "Analiza_Statica",
+  "AnalysisDate": "2025-10-19T17:43:15.6172582+03:00",
+  "TotalDuration": "00:00:00.3212105",
+  "Vulnerabilities": [
+    {
+      "Id": "PAT-001",
+      "Severity": 0,
+      "Title": "Insecure Deserialization",
+      "Description": "Deserializare nesigur\u0103 poate permite execu\u021Bie cod arbitrar",
+      "FilePath": "C:\\Users\\jitar\\RiderProjects\\MyBlazorServerBlog\\Analiza_Statica\\Program.cs",
+      "LineNumber": 138,
+      "CodeSnippet": "        // Deserialization\r\n        [@\u0022BinaryFormatter|SoapFormatter|NetDataContractSerializer\u0022] = (\r\n            \u0022Insecure Deserialization\u0022,\r",
+      "Remediation": "Folosi\u021Bi System.Text.Json sau valida\u021Bi tipurile deserializate",
+      "CweId": "CWE-502",
+      "Category": "Code Pattern Analysis",
+      "DetectedBy": [
+        "Pattern Analyzer"
+      ]
+    },
+    {
+      "Id": "PAT-002",
+      "Severity": 0,
+      "Title": "Insecure Deserialization",
+      "Description": "Deserializare nesigur\u0103 poate permite execu\u021Bie cod arbitrar",
+      "FilePath": "C:\\Users\\jitar\\RiderProjects\\MyBlazorServerBlog\\Analiza_Statica\\Program.cs",
+      "LineNumber": 138,
+      "CodeSnippet": "        // Deserialization\r\n        [@\u0022BinaryFormatter|SoapFormatter|NetDataContractSerializer\u0022] = (\r\n            \u0022Insecure Deserialization\u0022,\r",
+      "Remediation": "Folosi\u021Bi System.Text.Json sau valida\u021Bi tipurile deserializate",
+      "CweId": "CWE-502",
+      "Category": "Code Pattern Analysis",
+      "DetectedBy": [
+        "Pattern Analyzer"
+      ]
+    },
+    {
+      "Id": "PAT-003",
+      "Severity": 0,
+      "Title": "Insecure Deserialization",
+      "Description": "Deserializare nesigur\u0103 poate permite execu\u021Bie cod arbitrar",
+      "FilePath": "C:\\Users\\jitar\\RiderProjects\\MyBlazorServerBlog\\Analiza_Statica\\Program.cs",
+      "LineNumber": 138,
+      "CodeSnippet": "        // Deserialization\r\n        [@\u0022BinaryFormatter|SoapFormatter|NetDataContractSerializer\u0022] = (\r\n            \u0022Insecure Deserialization\u0022,\r",
+      "Remediation": "Folosi\u021Bi System.Text.Json sau valida\u021Bi tipurile deserializate",
+      "CweId": "CWE-502",
+      "Category": "Code Pattern Analysis",
+      "DetectedBy": [
+        "Pattern Analyzer"
+      ]
+    }
+  ],
+  "Statistics": {},
+  "FilesAnalyzed": 4,
+  "LinesOfCode": 600
+}
