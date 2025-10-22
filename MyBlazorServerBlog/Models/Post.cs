@@ -16,4 +16,9 @@ public class Post
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     public DateTime? UpdatedAt { get; set; }
     public bool IsPublished { get; set; } = true;
+
+    // Связь с комментариями
+    public List<Comment> Comments { get; set; } = new();
+
+    public byte[]? ImageData { get; set; }
 }

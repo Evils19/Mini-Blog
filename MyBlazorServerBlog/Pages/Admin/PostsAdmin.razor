@@ -1,69 +1,210 @@
 ﻿@page "/admin/posts"
 @inject BlogDbContext Db
 @inject NavigationManager Nav
+<link href="css/adminposts.css" rel="stylesheet" />
 
-<PageTitle>Админка — Посты</PageTitle>
-
-<section class="container my-4">
-    <h1>Админка — Посты</h1>
-
-    <div class="mb-3">
-        <NavLink class="btn btn-primary" href="/admin/posts/new">Добавить пост</NavLink>
-        <NavLink class="btn btn-outline-secondary ms-2" href="/posts">К списку (публично)</NavLink>
+<div class="admin-posts-bg">
+    <div class="admin-posts-container">
+        <div class="admin-posts-title">📝 Administrare Postări</div>
+        
+        <div class="admin-posts-btns">
+            <NavLink class="btn btn-primary" href="/admin/posts/new">
+                ➕ Adaugă postare nouă
+            </NavLink>
+            <NavLink class="btn btn-outline-secondary" href="/posts">
+                👁️ Vezi pagina publică
+            </NavLink>
+        </div>
+        
+        @if (!string.IsNullOrWhiteSpace(_error))
+        {
+            <div class="alert alert-danger">
+                <strong>❌ Eroare:</strong> @_error
+            </div>
+        }
+        
+        @if (_loading)
+        {
+            <div class="alert alert-info">
+                <strong>⏳ Se încarcă...</strong> Vă rugăm așteptați.
+            </div>
+        }
+        else if (_posts.Count == 0)
+        {
+            <div class="alert alert-warning">
+                <strong>📭 Nu există postări încă.</strong> Începe prin a adăuga prima postare!
+            </div>
+        }
+        else
+        {
+            <div class="admin-posts-table">
+                <table class="table table-striped mb-0">
+                    <thead>
+                    <tr>
+                        <th style="width: 60px;">ID</th>
+                        <th>Titlu</th>
+                        <th style="width: 150px;">Data creării</th>
+                        <th style="width: 100px;">Status</th>
+                        <th style="width: 220px;">Acțiuni</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    @foreach (var p in _posts)
+                    {
+                        <tr>
+                            <td><strong>#@p.Id</strong></td>
+                            <td>@p.Title</td>
+                            <td>@p.CreatedAt.ToLocalTime().ToString("dd.MM.yyyy HH:mm")</td>
+                            <td>
+                                @if (p.IsPublished)
+                                {
+                                    <span class="badge bg-success">✓ Publicat</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-secondary">○ Draft</span>
+                                }
+                            </td>
+                            <td>
+                                <NavLink class="btn btn-sm btn-outline-primary me-2" 
+                                         href="@($"/admin/posts/{p.Id}/edit")">
+                                    ✏️ Editează
+                                </NavLink>
+                                <button class="btn btn-sm btn-outline-danger" 
+                                        @onclick="() => DeleteAsync(p.Id)"
+                                        @onclick:stopPropagation="true">
+                                    🗑️ Șterge
+                                </button>
+                            </td>
+                        </tr>
+                    }
+                    </tbody>
+                </table>
+            </div>
+        }
     </div>
-
-    @if (!string.IsNullOrWhiteSpace(_error))
-    {
-        <div class="alert alert-danger">@_error</div>
+</div>
+<style>
+    .admin-posts-bg {
+        min-height: 100vh;
+ 
+        padding: 2rem 1rem;
     }
 
-    @if (_loading)
-    {
-        <div class="alert alert-info">Загрузка…</div>
+    .admin-posts-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        background: white;
+        border-radius: 16px;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        padding: 2rem;
     }
-    else if (_posts.Count == 0)
-    {
-        <p>Постов пока нет.</p>
+
+    .admin-posts-title {
+        font-size: 2rem;
+        font-weight: 700;
+        color: #2d3748;
+        margin-bottom: 1.5rem;
+        padding-bottom: 1rem;
+        border-bottom: 3px solid #667eea;
     }
-    else
-    {
-        <table class="table table-striped">
-            <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>Заголовок</th>
-                    <th>Создан</th>
-                    <th>Опубликован</th>
-                    <th></th>
-                </tr>
-            </thead>
-            <tbody>
-            @foreach (var p in _posts)
-            {
-                <tr>
-                    <td>@p.Id</td>
-                    <td>@p.Title</td>
-                    <td>@p.CreatedAt.ToLocalTime().ToString("g")</td>
-                    <td>
-                        @if (p.IsPublished)
-                        {
-                            <span class="badge bg-success">Да</span>
-                        }
-                        else
-                        {
-                            <span class="badge bg-secondary">Нет</span>
-                        }
-                    </td>
-                    <td class="text-end">
-                        <NavLink class="btn btn-sm btn-outline-primary" href="@($"/admin/posts/{p.Id}/edit")">Редактировать</NavLink>
-                        <button class="btn btn-sm btn-outline-danger ms-1" @onclick="() => DeleteAsync(p.Id)">Удалить</button>
-                    </td>
-                </tr>
-            }
-            </tbody>
-        </table>
+
+    .admin-posts-btns {
+        display: flex;
+        gap: 1rem;
+        margin-bottom: 2rem;
+        flex-wrap: wrap;
     }
-</section>
+
+    .admin-posts-table {
+        overflow-x: auto;
+        border-radius: 8px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .admin-posts-table table {
+        margin-bottom: 0 !important;
+    }
+
+    .admin-posts-table thead {
+        color: white;
+    }
+
+    .admin-posts-table thead th {
+        font-weight: 600;
+        padding: 1rem;
+        border: none;
+        text-transform: uppercase;
+        font-size: 0.85rem;
+        letter-spacing: 0.5px;
+    }
+
+    .admin-posts-table tbody tr {
+        transition: all 0.2s ease;
+    }
+
+    .admin-posts-table tbody tr:hover {
+        background-color: #f7fafc;
+        transform: scale(1.01);
+    }
+
+    .admin-posts-table tbody td {
+        padding: 1rem;
+        vertical-align: middle;
+        color: #4a5568;
+    }
+
+    .badge {
+        padding: 0.4rem 0.8rem;
+        font-size: 0.85rem;
+        font-weight: 600;
+        border-radius: 20px;
+    }
+
+    .btn-sm {
+        padding: 0.4rem 1rem;
+        font-size: 0.875rem;
+        border-radius: 6px;
+        font-weight: 500;
+        transition: all 0.2s ease;
+    }
+
+    .btn-outline-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+    }
+
+    .btn-outline-danger:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(220, 53, 69, 0.4);
+    }
+
+    .alert {
+        border-radius: 8px;
+        border: none;
+        padding: 1rem 1.5rem;
+        margin-bottom: 1.5rem;
+    }
+
+    @@media (max-width: 768px) {
+    .admin-posts-container {
+        padding: 1.5rem;
+    }
+
+    .admin-posts-title {
+        font-size: 1.5rem;
+    }
+
+    .admin-posts-btns {
+        flex-direction: column;
+    }
+
+    .admin-posts-btns .btn {
+        width: 100%;
+    }
+    }
+    
+</style>
 
 @code {
     private List<Post> _posts = new();
@@ -80,7 +221,7 @@
         }
         catch (Exception ex)
         {
-            _error = $"Ошибка загрузки постов: {ex.Message}";
+            _error = $"Eroare la încărcarea postărilor: {ex.Message}";
         }
         finally
         {
@@ -101,7 +242,7 @@
         }
         catch (Exception ex)
         {
-            _error = $"Ошибка удаления: {ex.Message}";
+            _error = $"Eroare la ștergere: {ex.Message}";
         }
     }
 }

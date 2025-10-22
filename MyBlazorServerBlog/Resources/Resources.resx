@@ -1,0 +1,62 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, ...</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, ...</value>
+  </resheader>
+  <!-- Пример строки -->
+  <data name="Welcome" xml:space="preserve">
+    <value>Добро пожаловать!</value>
+  </data>
+  <data name="HeroSlide1Title" xml:space="preserve">
+    <value>The Best Homemade Masks for Face (keep the Pimples Away)</value>
+  </data>
+  <data name="HeroSlide1Text" xml:space="preserve">
+    <value>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Quidem neque est mollitia! Beatae minima assumenda repellat harum vero, officiis ipsam magnam obcaecati cumque maxime inventore repudiandae quidem necessitatibus rem atque.</value>
+  </data>
+  <data name="HeroSlide2Title" xml:space="preserve">
+    <value>17 Pictures of Medium Length Hair in Layers That Will Inspire Your New Haircut</value>
+  </data>
+  <data name="HeroSlide2Text" xml:space="preserve">
+    <value>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Quidem neque est mollitia! Beatae minima assumenda repellat harum vero, officiis ipsam magnam obcaecati cumque maxime inventore repudiandae quidem necessitatibus rem atque.</value>
+  </data>
+  <data name="HeroSlide3Title" xml:space="preserve">
+    <value>13 Amazing Poems from Shel Silverstein with Valuable Life Lessons</value>
+  </data>
+  <data name="HeroSlide3Text" xml:space="preserve">
+    <value>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Quidem neque est mollitia! Beatae minima assumenda repellat harum vero, officiis ipsam magnam obcaecati cumque maxime inventore repudiandae quidem necessitatibus rem atque.</value>
+  </data>
+  <data name="HeroSlide4Title" xml:space="preserve">
+    <value>9 Half-up/half-down Hairstyles for Long and Medium Hair</value>
+  </data>
+  <data name="HeroSlide4Text" xml:space="preserve">
+    <value>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Quidem neque est mollitia! Beatae minima assumenda repellat harum vero, officiis ipsam magnam obcaecati cumque maxime inventore repudiandae quidem necessitatibus rem atque.</value>
+  </data>
+  <data name="LatestPosts" xml:space="preserve">
+    <value>Последние публикации</value>
+  </data>
+  <data name="AllPosts" xml:space="preserve">
+    <value>Все посты</value>
+  </data>
+  <data name="Loading" xml:space="preserve">
+    <value>Загрузка…</value>
+  </data>
+  <data name="NoPosts" xml:space="preserve">
+    <value>Нет опубликованных постов.</value>
+  </data>
+  <data name="Post" xml:space="preserve">
+    <value>Пост</value>
+  </data>
+  <data name="ReadMore" xml:space="preserve">
+    <value>Читать далее →</value>
+  </data>
+</root>
+

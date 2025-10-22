@@ -2,25 +2,25 @@
 @using MyBlazorServerBlog.Data
 @inject WeatherForecastService ForecastService
 
-<PageTitle>Weather forecast</PageTitle>
+<PageTitle>Prognoza meteo</PageTitle>
 
-<h1>Weather forecast</h1>
+<h1>Prognoza meteo</h1>
 
-<p>This component demonstrates fetching data from a service.</p>
+<p>Acestă pagină demonstrează preluarea datelor dintr-un serviciu.</p>
 
 @if (forecasts == null)
 {
-    <p><em>Loading...</em></p>
+    <p><em>Se încarcă...</em></p>
 }
 else
 {
     <table class="table">
         <thead>
             <tr>
-                <th>Date</th>
+                <th>Data</th>
                 <th>Temp. (C)</th>
                 <th>Temp. (F)</th>
-                <th>Summary</th>
+                <th>Rezumat</th>
             </tr>
         </thead>
         <tbody>

@@ -3,74 +3,185 @@
 @inject BlogDbContext Db
 @inject NavigationManager Nav
 
-<PageTitle>Редактор поста</PageTitle>
+<PageTitle>Editor postare</PageTitle>
 
-<section class="container my-4">
-    <h1>@(_isNew ? "Добавить пост" : "Редактировать пост")</h1>
-
-    @if (!string.IsNullOrWhiteSpace(_error))
-    {
-        <div class="alert alert-danger">@_error</div>
-    }
-
-    @if (_loading)
-    {
-        <div class="alert alert-info">Загрузка…</div>
-    }
-    else
-    {
-        <EditForm Model="_model" OnValidSubmit="SaveAsync">
-            <DataAnnotationsValidator />
-            <ValidationSummary />
-
-            <div class="mb-3">
-                <label class="form-label">Заголовок</label>
-                <InputText class="form-control" @bind-Value="_model.Title" />
+<section class="container my-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            <!-- Header -->
+            <div class="mb-4">
+                <h1 class="fw-bold mb-2">
+                    @if (_isNew)
+                    {
+                        <i class="bi bi-plus-circle text-primary"></i> <text>Adaugă postare</text>
+                    }
+                    else
+                    {
+                        <i class="bi bi-pencil-square text-primary"></i> <text>Editează postarea</text>
+                    }
+                </h1>
+                <p class="text-muted">@(_isNew ? "Creează o postare nouă pentru blogul tău" : "Modifică postarea existentă")</p>
             </div>
 
-            <div class="mb-3">
-                <label class="form-label d-flex justify-content-between align-items-center">
-                    <span>Содержание</span>
-                    <div class="btn-group btn-group-sm" role="group">
-                        <button type="button" class="btn btn-outline-secondary @(_editorMode ? "active" : "")" 
-                                @onclick="() => SwitchMode(true)">
-                            <i class="bi bi-pencil-square"></i> Визуальный редактор
-                        </button>
-                        <button type="button" class="btn btn-outline-secondary @(!_editorMode ? "active" : "")" 
-                                @onclick="() => SwitchMode(false)">
-                            <i class="bi bi-code-slash"></i> HTML
-                        </button>
+            @if (!string.IsNullOrWhiteSpace(_error))
+            {
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                    <strong>Eroare!</strong> @_error
+                </div>
+            }
+
+            @if (_loading)
+            {
+                <div class="card border-0 shadow-sm">
+                    <div class="card-body text-center py-5">
+                        <div class="spinner-border text-primary mb-3" role="status">
+                            <span class="visually-hidden">Se încarcă...</span>
+                        </div>
+                        <p class="text-muted mb-0">Se încarcă datele...</p>
                     </div>
-                </label>
+                </div>
+            }
+            else
+            {
+                <div class="card border-0 shadow-sm">
+                    <div class="card-body p-4">
+                        <EditForm Model="_model" OnValidSubmit="SaveAsync">
+                            <DataAnnotationsValidator />
+                            <ValidationSummary class="alert alert-warning" />
 
-                @if (_editorMode)
-                {
-                    <SfRichTextEditor @bind-Value="_model.Content" Placeholder="Введите текст поста здесь..." Height="400px" />
-                }
-                else
-                {
-                    <InputTextArea class="form-control font-monospace" @bind-Value="_model.Content" rows="15" 
-                                   style="font-size: 14px; tab-size: 2;" />
-                    <small class="form-text text-muted">
-                        <i class="bi bi-info-circle"></i> Режим HTML: можно писать код напрямую
-                    </small>
-                }
-            </div>
+                            <!-- Titlu -->
+                            <div class="mb-4">
+                                <label class="form-label fw-semibold">
+                                    <i class="bi bi-type text-primary me-1"></i> Titlu
+                                </label>
+                                <InputText class="form-control form-control-lg" 
+                                           @bind-Value="_model.Title" 
+                                           placeholder="Introduceți titlul postării" />
+                            </div>
 
-            <div class="form-check mb-3">
-                <InputCheckbox class="form-check-input" @bind-Value="_model.IsPublished" />
-                <label class="form-check-label">Опубликовано</label>
-            </div>
+                            <!-- Conținut -->
+                            <div class="mb-4">
+                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                    <label class="form-label fw-semibold mb-0">
+                                        <i class="bi bi-file-text text-primary me-1"></i> Conținut
+                                    </label>
+                                    <div class="btn-group btn-group-sm" role="group" aria-label="Mod editor">
+                                        <button type="button" 
+                                                class="btn @(_editorMode ? "btn-primary" : "btn-outline-primary")" 
+                                                @onclick="() => SwitchMode(true)">
+                                            <i class="bi bi-pencil-square"></i> Vizual
+                                        </button>
+                                        <button type="button" 
+                                                class="btn @(!_editorMode ? "btn-primary" : "btn-outline-primary")" 
+                                                @onclick="() => SwitchMode(false)">
+                                            <i class="bi bi-code-slash"></i> HTML
+                                        </button>
+                                    </div>
+                                </div>
 
-            <button class="btn btn-primary" type="submit">
-                <i class="bi bi-save"></i> Сохранить
-            </button>
-            <NavLink class="btn btn-outline-secondary ms-2" href="/admin/posts">
-                <i class="bi bi-x-circle"></i> Отмена
-            </NavLink>
-        </EditForm>
-    }
+                                @if (_editorMode)
+                                {
+                                    <div class="border rounded">
+                                        <SfRichTextEditor @bind-Value="_model.Content" 
+                                                          Placeholder="Scrieți aici..." 
+                                                          Height="450px" />
+                                    </div>
+                                }
+                                else
+                                {
+                                    <InputTextArea class="form-control font-monospace" 
+                                                   @bind-Value="_model.Content" 
+                                                   rows="18" 
+                                                   placeholder="<p>Introduceți codul HTML...</p>"
+                                                   style="font-size: 14px; tab-size: 2; line-height: 1.6;" />
+                                    <div class="alert alert-info mt-2 py-2 px-3 d-flex align-items-center">
+                                        <i class="bi bi-info-circle me-2"></i>
+                                        <small class="mb-0">Mod HTML: puteți scrie cod direct</small>
+                                    </div>
+                                }
+                            </div>
+
+                            <!-- Status publicare -->
+                            <div class="mb-4">
+                                <div class="card bg-light border-0">
+                                    <div class="card-body py-3">
+                                        <div class="form-check form-switch">
+                                            <InputCheckbox class="form-check-input" 
+                                                           @bind-Value="_model.IsPublished" 
+                                                           id="publishedSwitch" />
+                                            <label class="form-check-label fw-semibold" for="publishedSwitch">
+                                                <i class="bi @(_model.IsPublished ? "bi-eye text-success" : "bi-eye-slash text-muted") me-1"></i>
+                                                @(_model.IsPublished ? "Publicat" : "Ciornă")
+                                            </label>
+                                        </div>
+                                        <small class="text-muted ms-4 ps-2">
+                                            @if (_model.IsPublished)
+                                            {
+                                                <text>Postarea va fi vizibilă pentru toți vizitatorii</text>
+                                            }
+                                            else
+                                            {
+                                                <text>Postarea nu va fi afișată pe site</text>
+                                            }
+                                        </small>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Butoane acțiuni -->
+                            <div class="d-flex gap-2 pt-3 border-top">
+                                <button class="btn btn-primary btn-lg px-4" type="submit">
+                                    <i class="bi bi-check-circle me-2"></i> Salvează
+                                </button>
+                                <NavLink class="btn btn-outline-secondary btn-lg px-4" href="/admin/posts">
+                                    <i class="bi bi-x-circle me-2"></i> Anulează
+                                </NavLink>
+                            </div>
+                        </EditForm>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
 </section>
+
+<style>
+    .form-control:focus,
+    .form-check-input:focus {
+        border-color: #0d6efd;
+        box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.15);
+    }
+
+    .card {
+        transition: all 0.3s ease;
+    }
+
+    .btn {
+        transition: all 0.2s ease;
+    }
+
+    .btn:hover {
+        transform: translateY(-1px);
+    }
+
+    .form-label {
+        color: #495057;
+        margin-bottom: 0.5rem;
+    }
+
+    .alert {
+        border-left: 4px solid;
+    }
+
+    .alert-danger {
+        border-left-color: #dc3545;
+    }
+
+    .alert-info {
+        border-left-color: #0dcaf0;
+    }
+</style>
 
 @code {
     [Parameter] public int? id { get; set; }
@@ -95,7 +206,7 @@
                 var existing = await Db.Posts.FirstOrDefaultAsync(x => x.Id == id!.Value);
                 if (existing is null)
                 {
-                    _error = "Пост не найден.";
+                    _error = "Postarea nu a fost găsită.";
                     _model = new Post();
                 }
                 else
@@ -106,7 +217,7 @@
         }
         catch (Exception ex)
         {
-            _error = $"Ошибка загрузки поста: {ex.Message}";
+            _error = $"Eroare la încărcarea postării: {ex.Message}";
         }
         finally
         {
@@ -140,7 +251,7 @@
         }
         catch (Exception ex)
         {
-            _error = $"Ошибка сохранения: {ex.Message}";
+            _error = $"Eroare la salvare: {ex.Message}";
         }
     }
 }
