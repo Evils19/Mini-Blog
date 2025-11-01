@@ -1,0 +1,90 @@
+﻿@page "/Lab/sql-injection"
+@inject BlogDbContext Db
+@inject VulnerabilityToggleService Toggles
+
+<link href="/css/lab.css" rel="stylesheet" />
+
+<PageTitle>SQL Injection</PageTitle>
+
+<div class="lab-container">
+    <h2 class="lab-title">SQL Injection</h2>
+    <p class="lab-subtitle">Mod: <span class="lab-badge @(Toggles.SqlInjection ? "badge-warn" : "badge-ok")">@(Toggles.SqlInjection ? "Vulnerable" : "Secure")</span></p>
+
+    <div class="lab-section mb-3">
+        <label class="form-label">Termen de căutare</label>
+        <input class="form-control" placeholder="ex: test' OR 1=1 --" @bind="_q" />
+        <div class="mt-2">
+            <button class="btn btn-primary" @onclick="SearchAsync">Caută</button>
+            <button class="btn btn-secondary ms-2" @onclick="(()=>{_q=string.Empty; _results=null; _error=null;})">Resetează</button>
+        </div>
+        <p class="form-note mt-2">În modul Vulnerable, interogarea se construiește prin concatenare de șiruri; în modul Secure se folosesc parametri/ LINQ.</p>
+        @if (!string.IsNullOrEmpty(_error))
+        {
+            <div class="alert alert-danger mt-2">@_error</div>
+        }
+    </div>
+
+    <div class="lab-section">
+        <h5>Rezultate</h5>
+        @if (_results is null)
+        {
+            <p class="text-muted">Introduceți un termen și apăsați Caută.</p>
+        }
+        else if (_results.Count == 0)
+        {
+            <p>Niciun rezultat.</p>
+        }
+        else
+        {
+            <ul class="list-group mt-2">
+                @foreach (var p in _results)
+                {
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        <span><a href="/posts/@p.Id">@p.Title</a></span>
+                        <small class="text-muted">@p.CreatedAt.ToLocalTime().ToString("g")</small>
+                    </li>
+                }
+            </ul>
+        }
+    </div>
+</div>
+
+@code {
+    private string _q = string.Empty;
+    private List<Post>? _results;
+    private string? _error;
+
+    private async Task SearchAsync()
+    {
+        _error = null;
+        try
+        {
+            if (string.IsNullOrWhiteSpace(_q))
+            {
+                _results = new List<Post>();
+                return;
+            }
+
+            if (Toggles.SqlInjection)
+            {
+                // DEMO vulnerabil: concatenare directă în SQL
+                var sql = $"SELECT * FROM Posts WHERE Title LIKE '%{_q.Replace("'", "''")}%' OR Content LIKE '%{_q.Replace("'", "''")}%' ORDER BY CreatedAt DESC";
+                _results = await Db.Posts.FromSqlRaw(sql).ToListAsync();
+            }
+            else
+            {
+                // Varianta securizată: LINQ (parametrizată de EF)
+                var term = _q.Trim();
+                _results = await Db.Posts
+                    .Where(p => EF.Functions.Like(p.Title, $"%{term}%") || EF.Functions.Like(p.Content, $"%{term}%"))
+                    .OrderByDescending(p => p.CreatedAt)
+                    .ToListAsync();
+            }
+        }
+        catch (Exception ex)
+        {
+            _error = "Eroare la căutare. (Detalii sunt în loguri)";
+            Console.WriteLine(ex);
+        }
+    }
+}

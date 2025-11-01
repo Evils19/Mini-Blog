@@ -1,0 +1,24 @@
+﻿@page "/Lab/third-party"
+@inject VulnerabilityToggleService Toggles
+
+<link href="/css/lab.css" rel="stylesheet" />
+
+<PageTitle>Software terț vulnerabil</PageTitle>
+
+<div class="lab-container">
+    <h2 class="lab-title">Vulnerable Third Party Software</h2>
+    <p class="lab-subtitle">Mod: <span class="lab-badge @(Toggles.VulnerableThirdParty ? "badge-warn" : "badge-ok")">@(Toggles.VulnerableThirdParty ? "Vulnerable" : "Secure")</span></p>
+
+    <div class="lab-section mb-3">
+        <h5>Descriere</h5>
+        <p class="text-muted">Acest exercițiu simulează existența unor dependențe învechite sau cu CVE-uri. Activați opțiunea în appsettings.Development.json → Vulnerabilities.VulnerableThirdParty pentru a rula un SCA (Software Composition Analysis) și a observa alertările.</p>
+    </div>
+
+    <div class="lab-section">
+        <h5>Ce să testați</h5>
+        <ul>
+            <li>Rulați un analizor (ex.: OWASP Dependency-Check sau Dependabot) și observați rapoartele.</li>
+            <li>Actualizați pachetele și re-rulați scanarea.</li>
+        </ul>
+    </div>
+</div>

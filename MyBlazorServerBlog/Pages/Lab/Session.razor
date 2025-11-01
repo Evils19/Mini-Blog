@@ -1,0 +1,47 @@
+﻿@page "/Lab/session"
+@inject HttpClient Http
+@inject VulnerabilityToggleService Toggles
+
+<link href="/css/lab.css" rel="stylesheet" />
+
+<PageTitle>Session Handling</PageTitle>
+
+<div class="lab-container">
+    <h2 class="lab-title">Session Handling Flaw</h2>
+    <p class="lab-subtitle">Mod: <span class="lab-badge @(Toggles.SessionHandlingFlaw ? "badge-warn" : "badge-ok")">@(Toggles.SessionHandlingFlaw ? "Vulnerable" : "Secure")</span></p>
+
+    <div class="lab-section mb-3">
+        <h5>1) Setează cookie</h5>
+        <p class="form-note">În modul Vulnerable, cookie‑ul este setat fără HttpOnly/Secure și cu valabilitate îndelungată.</p>
+        <button class="btn btn-primary" @onclick="SetCookieAsync">Setează</button>
+        @if (!string.IsNullOrEmpty(_message))
+        {
+            <div class="alert alert-info mt-2">@_message</div>
+        }
+    </div>
+
+    <div class="lab-section">
+        <h5>2) Verifică sesiunea</h5>
+        <button class="btn btn-secondary" @onclick="WhoAmIAsync">Cine sunt?</button>
+        <p class="mt-2">ID sesiune: <strong>@(_sessionId ?? "(n/a)")</strong></p>
+    </div>
+</div>
+
+@code {
+    private string? _message;
+    private string? _sessionId;
+
+    private async Task SetCookieAsync()
+    {
+        var res = await Http.GetAsync("/lab/session/set");
+        _message = res.IsSuccessStatusCode ? "Cookie setat." : $"Eroare: {(int)res.StatusCode}";
+    }
+
+    private async Task WhoAmIAsync()
+    {
+        var res = await Http.GetFromJsonAsync<WhoDto>("/lab/session/whoami");
+        _sessionId = res?.session;
+    }
+
+    private record WhoDto(string? session, bool has);
+}

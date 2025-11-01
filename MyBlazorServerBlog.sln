@@ -9,6 +9,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Analiza_Statica", "Analiza_
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Analiza_Dynamica", "Analiza_Dynamica\Analiza_Dynamica.csproj", "{06673DA9-98E1-434E-998F-66DB71DC8C73}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "E2E.Test", "E2E.Test\E2E.Test.csproj", "{F776A264-9D9D-44D6-AACE-F3662EF356ED}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,6 +29,10 @@ Global
 		{06673DA9-98E1-434E-998F-66DB71DC8C73}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{06673DA9-98E1-434E-998F-66DB71DC8C73}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{06673DA9-98E1-434E-998F-66DB71DC8C73}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F776A264-9D9D-44D6-AACE-F3662EF356ED}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F776A264-9D9D-44D6-AACE-F3662EF356ED}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F776A264-9D9D-44D6-AACE-F3662EF356ED}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F776A264-9D9D-44D6-AACE-F3662EF356ED}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

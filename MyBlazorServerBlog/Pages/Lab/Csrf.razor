@@ -1,0 +1,82 @@
+﻿@page "/Lab/csrf"
+@inject HttpClient Http
+@inject VulnerabilityToggleService Toggles
+
+<link href="/css/lab.css" rel="stylesheet" />
+
+<PageTitle>CSRF</PageTitle>
+
+<div class="lab-container">
+    <h2 class="lab-title">Cross-Site Request Forgery (CSRF)</h2>
+    <p class="lab-subtitle">Mod: <span class="lab-badge @(Toggles.Csrf ? "badge-warn" : "badge-ok")">@(Toggles.Csrf ? "Vulnerable" : "Secure")</span></p>
+
+    <div class="lab-section mb-3">
+        <h5>1) Obține token</h5>
+        <p class="form-note">În modul securizat, trebuie să trimiți antetul X-CSRF-Token egal cu valoarea cookie‑ului.</p>
+        <button class="btn btn-outline-primary" @onclick="GetTokenAsync">Generează token</button>
+        @if (!string.IsNullOrEmpty(_token))
+        {
+            <p class="mt-2">Token: <code>@_token</code> (salvat și în cookie <code>lab-csrf-token</code>)</p>
+        }
+    </div>
+
+    <div class="lab-section mb-3">
+        <h5>2) Actualizează notă</h5>
+        <div class="mb-2">
+            <label class="form-label">Notă</label>
+            <input class="form-control" @bind="_note" />
+        </div>
+        <div class="mb-2 form-check">
+            <input class="form-check-input" type="checkbox" id="sendHeader" @bind="_sendHeader" />
+            <label for="sendHeader" class="form-check-label">Trimite antetul X-CSRF-Token (recomandat în modul Secure)</label>
+        </div>
+        <button class="btn btn-primary" @onclick="UpdateNoteAsync">Trimite</button>
+        @if (!string.IsNullOrEmpty(_message))
+        {
+            <div class="alert alert-info mt-2">@_message</div>
+        }
+    </div>
+
+    <div class="lab-section">
+        <h5>3) Citește notă</h5>
+        <button class="btn btn-secondary" @onclick="ReadNoteAsync">Refresh</button>
+        <p class="mt-2">Valoare: <strong>@(_lastNote ?? "(gol)")</strong></p>
+    </div>
+</div>
+
+@code {
+    private string? _token;
+    private string _note = string.Empty;
+    private string? _lastNote;
+    private string? _message;
+    private bool _sendHeader = true;
+
+    private async Task GetTokenAsync()
+    {
+        var res = await Http.GetFromJsonAsync<TokenDto>("/lab/csrf/token");
+        _token = res?.Token;
+    }
+
+    private async Task UpdateNoteAsync()
+    {
+        using (var req = new HttpRequestMessage(HttpMethod.Post, "/lab/csrf/update-note"))
+        {
+            req.Content = new StringContent($"note={Uri.EscapeDataString(_note)}", System.Text.Encoding.UTF8, "application/x-www-form-urlencoded");
+            if (_sendHeader && !string.IsNullOrEmpty(_token))
+            {
+                req.Headers.Add("X-CSRF-Token", _token);
+            }
+            var resp = await Http.SendAsync(req);
+            _message = resp.IsSuccessStatusCode ? "Notă actualizată" : $"Eroare: {(int)resp.StatusCode}";
+        }
+    }
+
+    private async Task ReadNoteAsync()
+    {
+        var res = await Http.GetFromJsonAsync<NoteDto>("/lab/csrf/note");
+        _lastNote = res?.Note;
+    }
+
+    private record TokenDto(string Token, string Mode);
+    private record NoteDto(string Note);
+}

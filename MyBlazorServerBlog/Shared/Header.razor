@@ -10,6 +10,7 @@
             <ul>
                 <li><NavLink href="/">Acasă</NavLink></li>
                 <li><NavLink href="/posts">Postări</NavLink></li>
+                
                 <li class="dropdown">
                     <a href="#"><span>Categorii</span> <i class="bi bi-chevron-down dropdown-indicator"></i></a>
                     <ul>
@@ -27,6 +28,23 @@
                         <li><a href="#">Categorie 3</a></li>
                     </ul>
                 </li>
+
+                <!-- Меню лаборатории безопасности -->
+                <li class="dropdown">
+                    <a href="#"><span>Laborator</span> <i class="bi bi-chevron-down dropdown-indicator"></i></a>
+                    <ul>
+                        <li><NavLink href="/Lab">Prezentare laborator</NavLink></li>
+                        <li><NavLink href="/Lab/sql-injection">SQL Injection</NavLink></li>
+                        <li><NavLink href="/Lab/xss">XSS</NavLink></li>
+                        <li><NavLink href="/Lab/csrf">CSRF</NavLink></li>
+                        <li><NavLink href="/Lab/session">Session</NavLink></li>
+                        <li><NavLink href="/Lab/logic">Logic Flaw</NavLink></li>
+                        <li><NavLink href="/Lab/auth">AuthN/AuthZ</NavLink></li>
+                        <li><NavLink href="/Lab/errors">Erori verbose</NavLink></li>
+                        <li><NavLink href="/Lab/source">Source disclosure</NavLink></li>
+                    </ul>
+                </li>
+
                 <li><NavLink href="/admin/posts">Admin</NavLink></li>
                 <li><NavLink href="/admin/posts/new">Postare nouă</NavLink></li>
             </ul>

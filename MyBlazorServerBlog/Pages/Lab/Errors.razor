@@ -1,0 +1,22 @@
+﻿@page "/Lab/errors"
+@inject VulnerabilityToggleService Toggles
+
+<link href="/css/lab.css" rel="stylesheet" />
+
+<PageTitle>Erori verbose</PageTitle>
+
+<div class="lab-container">
+    <h2 class="lab-title">Mesaje de eroare prea detaliate</h2>
+    <p class="lab-subtitle">Mod: <span class="lab-badge @(Toggles.VerboseErrors ? "badge-warn" : "badge-ok")">@(Toggles.VerboseErrors ? "Vulnerable" : "Secure")</span></p>
+
+    <div class="lab-section mb-3">
+        <h5>Descriere</h5>
+        <p class="text-muted">În modul vulnerabil, aplicația afișează Developer Exception Page cu detalii interne (stack trace, variabile). În modul securizat, utilizatorul vede o pagină generică de eroare.</p>
+    </div>
+
+    <div class="lab-section">
+        <h5>Test rapid</h5>
+        <a class="btn btn-danger" href="/lab/throw" target="_blank" rel="noopener">Generează o excepție</a>
+        <p class="form-note mt-2">Dacă vedeți un ecran roșu cu detalii complete, este vulnerabil. Dacă vedeți o pagină generică de eroare, este securizat.</p>
+    </div>
+</div>

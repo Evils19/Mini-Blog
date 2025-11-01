@@ -1,0 +1,119 @@
+﻿@page "/Lab/xss"
+@inject BlogDbContext Db
+@inject VulnerabilityToggleService Toggles
+
+<link href="/css/lab.css" rel="stylesheet" />
+
+<PageTitle>XSS</PageTitle>
+
+<div class="lab-container">
+    <h2 class="lab-title">Cross-site Scripting (XSS)</h2>
+    <p class="lab-subtitle">Mod: <span class="lab-badge @(Toggles.Xss ? "badge-warn" : "badge-ok")">@(Toggles.Xss ? "Vulnerable" : "Secure")</span></p>
+
+    @if (_loading)
+    {
+        <p>Se încarcă...</p>
+    }
+    else
+    {
+        <div class="lab-section mb-3">
+            <h5>Comentarii</h5>
+            @if (_comments.Count == 0)
+            {
+                <p class="text-muted">Încă nu există comentarii. Adaugă unul mai jos.</p>
+            }
+            else
+            {
+                <ul class="list-group">
+                    @foreach (var c in _comments)
+                    {
+                        <li class="list-group-item">
+                            <strong>@c.Author</strong>
+                            <div class="mt-1">
+                                @if (Toggles.Xss)
+                                {
+                                    @((MarkupString)c.Content)
+                                }
+                                else
+                                {
+                                    @c.Content
+                                }
+                            </div>
+                        </li>
+                    }
+                </ul>
+            }
+        </div>
+
+        <div class="lab-section">
+            <h5>Adaugă comentariu</h5>
+            <EditForm Model="_newComment" OnValidSubmit="AddCommentAsync">
+                <DataAnnotationsValidator />
+                <ValidationSummary />
+                <div class="mb-2">
+                    <label class="form-label">Nume</label>
+                    <InputText class="form-control" @bind-Value="_newComment.Author" />
+                </div>
+                <div class="mb-2">
+                    <label class="form-label">Comentariu (ex: &lt;img src=x onerror=alert(1)&gt;)</label>
+                    <InputTextArea class="form-control" @bind-Value="_newComment.Content" rows="3" />
+                </div>
+                <button class="btn btn-primary" type="submit">Adaugă</button>
+            </EditForm>
+
+            @if (!string.IsNullOrEmpty(_message))
+            {
+                <div class="alert alert-info mt-2">@_message</div>
+            }
+        </div>
+    }
+</div>
+
+@code {
+    private bool _loading = true;
+    private Post? _labPost;
+    private List<Comment> _comments = new();
+    private Comment _newComment = new();
+    private string? _message;
+
+    protected override async Task OnInitializedAsync()
+    {
+        // Asigură existența unei postări dedicate laboratorului XSS
+        _labPost = await Db.Posts.FirstOrDefaultAsync(p => p.Title == "[LAB] XSS");
+        if (_labPost == null)
+        {
+            _labPost = new Post
+            {
+                Title = "[LAB] XSS",
+                Content = "<p>Postare dedicată testării XSS.</p>",
+                CreatedAt = DateTime.UtcNow,
+                IsPublished = true
+            };
+            Db.Posts.Add(_labPost);
+            await Db.SaveChangesAsync();
+        }
+        await LoadCommentsAsync();
+        _loading = false;
+    }
+
+    private async Task LoadCommentsAsync()
+    {
+        _comments = await Db.Comments
+            .Where(c => c.PostId == _labPost!.Id)
+            .OrderByDescending(c => c.CreatedAt)
+            .ToListAsync();
+    }
+
+    private async Task AddCommentAsync()
+    {
+        if (_labPost is null) return;
+        _newComment.PostId = _labPost.Id;
+        _newComment.CreatedAt = DateTime.UtcNow;
+        Db.Comments.Add(_newComment);
+        await Db.SaveChangesAsync();
+        _newComment = new Comment();
+        _message = "Comentariu adăugat.";
+        await LoadCommentsAsync();
+        StateHasChanged();
+    }
+}

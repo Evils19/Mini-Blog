@@ -1,0 +1,100 @@
+﻿@page "/Lab/auth"
+@inject HttpClient Http
+@inject VulnerabilityToggleService Toggles
+
+<link href="/css/lab.css" rel="stylesheet" />
+
+<PageTitle>AuthN/AuthZ</PageTitle>
+
+<div class="lab-container">
+    <h2 class="lab-title">Autentificare și Autorizare (AuthN/AuthZ)</h2>
+    <p class="lab-subtitle">
+        Mod autenticare: <span class="lab-badge @(Toggles.AuthenticationBypass ? "badge-warn" : "badge-ok")">@(Toggles.AuthenticationBypass ? "Vulnerable" : "Secure")</span>
+        <span class="ms-2">Mod autorizare: <span class="lab-badge @(Toggles.AuthorizationBypass ? "badge-warn" : "badge-ok")">@(Toggles.AuthorizationBypass ? "Vulnerable" : "Secure")</span></span>
+    </p>
+
+    <div class="lab-section mb-3">
+        <h5>1) Login</h5>
+        <div class="row g-2">
+            <div class="col-md-4">
+                <label class="form-label">Utilizator</label>
+                <input class="form-control" @bind-value="_user" />
+            </div>
+            <div class="col-md-4">
+                <label class="form-label">Parolă</label>
+                <input class="form-control" type="password" @bind-value="_pass" />
+                <div class="form-note">Secure: necesită admin / P@ssw0rd!. Vulnerable: permite oricărui utilizator, inclusiv fără parolă.</div>
+            </div>
+        </div>
+        <button class="btn btn-primary mt-2" @onclick="LoginAsync">Login</button>
+        <button class="btn btn-secondary mt-2 ms-2" @onclick="LogoutAsync">Logout</button>
+        @if (!string.IsNullOrEmpty(_message))
+        {
+            <div class="alert alert-info mt-2">@_message</div>
+        }
+    </div>
+
+    <div class="lab-section mb-3">
+        <h5>2) Cine sunt?</h5>
+        <button class="btn btn-outline-primary" @onclick="MeAsync">Afișează</button>
+        <p class="mt-2">Utilizator: <strong>@_meUser</strong>; Rol: <strong>@_meRole</strong></p>
+    </div>
+
+    <div class="lab-section">
+        <h5>3) Zonă admin</h5>
+        <button class="btn btn-danger" @onclick="AdminAsync">Accesează</button>
+        @if (!string.IsNullOrEmpty(_adminResult))
+        {
+            <div class="alert alert-info mt-2">@_adminResult</div>
+        }
+    </div>
+</div>
+
+@code {
+    private string _user = "admin";
+    private string _pass = "";
+    private string? _message;
+    private string _meUser = "(anonim)";
+    private string _meRole = "(none)";
+    private string? _adminResult;
+
+    private async Task LoginAsync()
+    {
+        var content = new StringContent($"user={Uri.EscapeDataString(_user)}&pass={Uri.EscapeDataString(_pass)}", System.Text.Encoding.UTF8, "application/x-www-form-urlencoded");
+        var resp = await Http.PostAsync("/lab/auth/login", content);
+        _message = resp.IsSuccessStatusCode ? "Autentificat" : $"Eroare: {(int)resp.StatusCode}";
+    }
+
+    private async Task LogoutAsync()
+    {
+        var resp = await Http.PostAsync("/lab/auth/logout", new StringContent(string.Empty));
+        _message = resp.IsSuccessStatusCode ? "Delogat" : $"Eroare: {(int)resp.StatusCode}";
+        _meUser = "(anonim)"; _meRole = "(none)"; _adminResult = null;
+    }
+
+    private async Task MeAsync()
+    {
+        var res = await Http.GetFromJsonAsync<MeDto>("/lab/auth/me");
+        _meUser = res?.user ?? "(anonim)";
+        _meRole = res?.role ?? "(none)";
+    }
+
+    private async Task AdminAsync()
+    {
+        var resp = await Http.GetAsync("/lab/auth/admin");
+        if (resp.IsSuccessStatusCode)
+        {
+            _adminResult = await resp.Content.ReadAsStringAsync();
+        }
+        else if ((int)resp.StatusCode == 403)
+        {
+            _adminResult = "Acces interzis (403)";
+        }
+        else
+        {
+            _adminResult = $"Eroare: {(int)resp.StatusCode}";
+        }
+    }
+
+    private class MeDto { public string? user { get; set; } public string? role { get; set; } }
+}

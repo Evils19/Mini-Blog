@@ -1,0 +1,69 @@
+﻿@page "/Lab/logic"
+@inject HttpClient Http
+@inject VulnerabilityToggleService Toggles
+
+<link href="/css/lab.css" rel="stylesheet" />
+
+<PageTitle>Logic Flaw</PageTitle>
+
+<div class="lab-container">
+    <h2 class="lab-title">Logic Flaw</h2>
+    <p class="lab-subtitle">Mod: <span class="lab-badge @(Toggles.LogicFlaw ? "badge-warn" : "badge-ok")">@(Toggles.LogicFlaw ? "Vulnerable" : "Secure")</span></p>
+
+    <div class="lab-section mb-3">
+        <h5>1) Simulează checkout</h5>
+        <div class="row g-2">
+            <div class="col-md-4">
+                <label class="form-label">Preț/unitate</label>
+                <input class="form-control" type="number" step="0.01" @bind-value="_unit" />
+            </div>
+            <div class="col-md-4">
+                <label class="form-label">Cantitate</label>
+                <input class="form-control" type="number" @bind-value="_qty" />
+            </div>
+            <div class="col-md-4">
+                <label class="form-label">Reducere (%)</label>
+                <input class="form-control" type="number" step="0.01" @bind-value="_discount" />
+                <div class="form-note">În modul Vulnerable, această valoare este acceptată din client.</div>
+            </div>
+        </div>
+        <button class="btn btn-primary mt-3" @onclick="CheckoutAsync">Calculează</button>
+    </div>
+
+    <div class="lab-section">
+        <h5>Rezultat</h5>
+        @if (_result is null)
+        {
+            <p class="text-muted">Introduce parametrii și calculează.</p>
+        }
+        else
+        {
+            <ul>
+                <li>Subtotal: <strong>@_result.subtotal</strong></li>
+                <li>Reducere aplicată: <strong>@_result.discountPct %</strong> (=@_result.discount)</li>
+                <li>Total: <strong>@_result.total</strong></li>
+            </ul>
+        }
+    </div>
+</div>
+
+@code {
+    private decimal _unit = 10m;
+    private int _qty = 1;
+    private decimal _discount = 0m;
+
+    private CheckoutResp? _result;
+
+    private async Task CheckoutAsync()
+    {
+        var payload = new CheckoutReq { UnitPrice = _unit, Qty = _qty, DiscountPct = _discount };
+        var resp = await Http.PostAsJsonAsync("/lab/logic/checkout", payload);
+        if (resp.IsSuccessStatusCode)
+        {
+            _result = await resp.Content.ReadFromJsonAsync<CheckoutResp>();
+        }
+    }
+
+    private class CheckoutReq { public decimal UnitPrice { get; set; } public int Qty { get; set; } public decimal DiscountPct { get; set; } }
+    private class CheckoutResp { public decimal subtotal { get; set; } public decimal discountPct { get; set; } public decimal discount { get; set; } public decimal total { get; set; } }
+}

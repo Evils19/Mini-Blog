@@ -1,0 +1,20 @@
+﻿/* Stil comun pentru paginile de laborator */
+.lab-container { max-width: 900px; margin: 0 auto; padding: 1rem; }
+.lab-title { font-weight: 700; color: #1a202c; }
+.lab-subtitle { color: #4a5568; }
+.lab-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1rem; }
+.lab-card { background: #fff; border-radius: 14px; padding: 1.25rem; box-shadow: 0 6px 20px rgba(0,0,0,.08); transition: transform .2s ease, box-shadow .2s ease; }
+.lab-card:hover { transform: translateY(-3px); box-shadow: 0 10px 30px rgba(0,0,0,.12); }
+.lab-badge { display:inline-block; padding:.25rem .5rem; border-radius:999px; font-size:.8rem; }
+.badge-ok { background:#e6fffa; color:#285e61; border:1px solid #b2f5ea; }
+.badge-warn { background:#fff5f5; color:#822727; border:1px solid #fed7d7; }
+.lab-section { background:#fff; border-radius:12px; padding:1rem 1.25rem; box-shadow: 0 4px 16px rgba(0,0,0,.06); }
+.lab-actions .btn { border-radius:8px; }
+
+/* Form styles */
+.form-label { font-weight:600; color:#2d3748; }
+.form-note { font-size:.9rem; color:#718096; }
+
+/* Helper */
+.mt-2{margin-top:.5rem}.mt-3{margin-top:1rem}.mt-4{margin-top:1.5rem}.mb-2{margin-bottom:.5rem}.mb-3{margin-bottom:1rem}.mb-4{margin-bottom:1.5rem}
+

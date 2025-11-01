@@ -1,0 +1,55 @@
+﻿@page "/Lab/source"
+@inject HttpClient Http
+@inject VulnerabilityToggleService Toggles
+
+<link href="/css/lab.css" rel="stylesheet" />
+
+<PageTitle>Source Code Disclosure</PageTitle>
+
+<div class="lab-container">
+    <h2 class="lab-title">Dezvăluire cod sursă</h2>
+    <p class="lab-subtitle">Mod: <span class="lab-badge @(Toggles.SourceCodeDisclosure ? "badge-warn" : "badge-ok")">@(Toggles.SourceCodeDisclosure ? "Vulnerable" : "Secure")</span></p>
+
+    <div class="lab-section mb-3">
+        <h5>Descriere</h5>
+        <p class="text-muted">În modul vulnerabil, endpoint‑ul /lab/source poate returna conținutul fișierului Program.cs. În modul securizat, răspunsul este 404.</p>
+    </div>
+
+    <div class="lab-section">
+        <h5>Test</h5>
+        <button class="btn btn-primary" @onclick="LoadAsync">Afișează Program.cs</button>
+        @if (!string.IsNullOrEmpty(_message))
+        {
+            <div class="alert alert-info mt-2">@_message</div>
+        }
+        @if (!string.IsNullOrEmpty(_code))
+        {
+            <pre class="mt-3" style="max-height: 420px; overflow:auto; background:#0b1021; color:#d6deeb; padding:1rem; border-radius:8px; border:1px solid #2a2f45;"><code>@_code</code></pre>
+        }
+    </div>
+</div>
+
+@code {
+    private string? _code;
+    private string? _message;
+
+    private async Task LoadAsync()
+    {
+        var resp = await Http.GetAsync("/lab/source");
+        if (resp.IsSuccessStatusCode)
+        {
+            _code = await resp.Content.ReadAsStringAsync();
+            _message = null;
+        }
+        else if (resp.StatusCode == System.Net.HttpStatusCode.NotFound)
+        {
+            _message = "Endpoint dezactivat în modul Secure (404).";
+            _code = null;
+        }
+        else
+        {
+            _message = $"Eroare: {(int)resp.StatusCode}";
+            _code = null;
+        }
+    }
+}

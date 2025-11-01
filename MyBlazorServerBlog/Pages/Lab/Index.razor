@@ -1,0 +1,86 @@
+﻿@page "/Lab"
+@inject VulnerabilityToggleService Toggles
+
+<link href="css/lab.css" rel="stylesheet" />
+
+<PageTitle>Laborator Securitate Web</PageTitle>
+
+<div class="lab-container">
+    <h2 class="lab-title">Laborator: Vulnerabilități Web</h2>
+    <p class="lab-subtitle">Mod curent: <span class="lab-badge @(Toggles.IsVulnerableMode ? "badge-warn" : "badge-ok")">@(Toggles.IsVulnerableMode ? "Vulnerable" : "Secure")</span></p>
+
+    <div class="lab-grid mt-3">
+        <div class="lab-card">
+            <h5>SQL Injection</h5>
+            <p class="text-muted">Căutare cu/ fără parametrizare.</p>
+            <div class="lab-actions">
+                <NavLink class="btn btn-primary" href="/Lab/sql-injection">Deschide</NavLink>
+                <span class="lab-badge @(Toggles.SqlInjection ? "badge-warn" : "badge-ok") ms-2">@(Toggles.SqlInjection ? "Vulnerabil" : "Securizat")</span>
+            </div>
+        </div>
+        <div class="lab-card">
+            <h5>XSS</h5>
+            <p class="text-muted">Randare conținut comentarii.</p>
+            <div class="lab-actions">
+                <NavLink class="btn btn-primary" href="/Lab/xss">Deschide</NavLink>
+                <span class="lab-badge @(Toggles.Xss ? "badge-warn" : "badge-ok") ms-2">@(Toggles.Xss ? "Vulnerabil" : "Securizat")</span>
+            </div>
+        </div>
+        <div class="lab-card">
+            <h5>CSRF</h5>
+            <p class="text-muted">Token verificat vs. lipsă verificare.</p>
+            <div class="lab-actions">
+                <NavLink class="btn btn-primary" href="/Lab/csrf">Deschide</NavLink>
+                <span class="lab-badge @(Toggles.Csrf ? "badge-warn" : "badge-ok") ms-2">@(Toggles.Csrf ? "Vulnerabil" : "Securizat")</span>
+            </div>
+        </div>
+        <div class="lab-card">
+            <h5>Session Handling</h5>
+            <p class="text-muted">Setări cookie (HttpOnly/Secure/SameSite/TTL).</p>
+            <div class="lab-actions">
+                <NavLink class="btn btn-primary" href="/Lab/session">Deschide</NavLink>
+                <span class="lab-badge @(Toggles.SessionHandlingFlaw ? "badge-warn" : "badge-ok") ms-2">@(Toggles.SessionHandlingFlaw ? "Vulnerabil" : "Securizat")</span>
+            </div>
+        </div>
+        <div class="lab-card">
+            <h5>Logic Flaw</h5>
+            <p class="text-muted">Reduceri calculate client vs. server.</p>
+            <div class="lab-actions">
+                <NavLink class="btn btn-primary" href="/Lab/logic">Deschide</NavLink>
+                <span class="lab-badge @(Toggles.LogicFlaw ? "badge-warn" : "badge-ok") ms-2">@(Toggles.LogicFlaw ? "Vulnerabil" : "Securizat")</span>
+            </div>
+        </div>
+        <div class="lab-card">
+            <h5>AuthN/AuthZ</h5>
+            <p class="text-muted">Ocolirea autentificării/autorizării.</p>
+            <div class="lab-actions">
+                <NavLink class="btn btn-primary" href="/Lab/auth">Deschide</NavLink>
+                <span class="lab-badge @(Toggles.AuthenticationBypass || Toggles.AuthorizationBypass ? "badge-warn" : "badge-ok") ms-2">@((Toggles.AuthenticationBypass || Toggles.AuthorizationBypass) ? "Vulnerabil" : "Securizat")</span>
+            </div>
+        </div>
+        <div class="lab-card">
+            <h5>Erori verbose</h5>
+            <p class="text-muted">Expunere stack trace.</p>
+            <div class="lab-actions">
+                <NavLink class="btn btn-primary" href="/Lab/errors">Deschide</NavLink>
+                <span class="lab-badge @(Toggles.VerboseErrors ? "badge-warn" : "badge-ok") ms-2">@(Toggles.VerboseErrors ? "Vulnerabil" : "Securizat")</span>
+            </div>
+        </div>
+        <div class="lab-card">
+            <h5>Software terț vulnerabil</h5>
+            <p class="text-muted">Dependențe învechite / cu CVE‑uri.</p>
+            <div class="lab-actions">
+                <NavLink class="btn btn-primary" href="/Lab/third-party">Deschide</NavLink>
+                <span class="lab-badge @(Toggles.VulnerableThirdParty ? "badge-warn" : "badge-ok") ms-2">@(Toggles.VulnerableThirdParty ? "Vulnerabil" : "Securizat")</span>
+            </div>
+        </div>
+        <div class="lab-card">
+            <h5>Source Code Disclosure</h5>
+            <p class="text-muted">Servire fișiere sursă.</p>
+            <div class="lab-actions">
+                <NavLink class="btn btn-primary" href="/Lab/source">Deschide</NavLink>
+                <span class="lab-badge @(Toggles.SourceCodeDisclosure ? "badge-warn" : "badge-ok") ms-2">@(Toggles.SourceCodeDisclosure ? "Vulnerabil" : "Securizat")</span>
+            </div>
+        </div>
+    </div>
+</div>
